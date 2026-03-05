@@ -116,6 +116,38 @@ function ResponsiveAppBar() {
                       {t("common:navigation.users")}
                     </Typography>
                   </MenuItem>,
+                  <MenuItem
+                    key="templates"
+                    onClick={handleCloseNavMenu}
+                    component={Link}
+                    href="/admin-panel/gift-cards/templates"
+                  >
+                    <Typography textAlign="center">Templates</Typography>
+                  </MenuItem>,
+                  <MenuItem
+                    key="purchases"
+                    onClick={handleCloseNavMenu}
+                    component={Link}
+                    href="/admin-panel/gift-cards/purchases"
+                  >
+                    <Typography textAlign="center">Purchases</Typography>
+                  </MenuItem>,
+                  <MenuItem
+                    key="redeem"
+                    onClick={handleCloseNavMenu}
+                    component={Link}
+                    href="/admin-panel/gift-cards/redeem"
+                  >
+                    <Typography textAlign="center">Redeem</Typography>
+                  </MenuItem>,
+                  <MenuItem
+                    key="widgets"
+                    onClick={handleCloseNavMenu}
+                    component={Link}
+                    href="/admin-panel/gift-cards/widgets"
+                  >
+                    <Typography textAlign="center">Widgets</Typography>
+                  </MenuItem>,
                   // mobile-menu-items
                 ]}
               {isLoaded &&
@@ -184,6 +216,38 @@ function ResponsiveAppBar() {
                     href="/admin-panel/users"
                   >
                     {t("common:navigation.users")}
+                  </Button>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                    component={Link}
+                    href="/admin-panel/gift-cards/templates"
+                  >
+                    Templates
+                  </Button>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                    component={Link}
+                    href="/admin-panel/gift-cards/purchases"
+                  >
+                    Purchases
+                  </Button>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                    component={Link}
+                    href="/admin-panel/gift-cards/redeem"
+                  >
+                    Redeem
+                  </Button>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                    component={Link}
+                    href="/admin-panel/gift-cards/widgets"
+                  >
+                    Widgets
                   </Button>
                   {/* desktop-menu-items */}
                 </>
