@@ -13,7 +13,7 @@ import Alert from "@mui/material/Alert";
 import Divider from "@mui/material/Divider";
 import LinearProgress from "@mui/material/LinearProgress";
 import { useGetWidgetByApiKeyService } from "@/services/api/services/widgets";
-import { useGetGiftCardTemplateService } from "@/services/api/services/gift-card-templates";
+import { useGetGiftCardTemplatePublicService } from "@/services/api/services/gift-card-templates";
 import { usePurchaseGiftCardService } from "@/services/api/services/gift-cards";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
 import { Widget } from "@/services/api/types/widget";
@@ -29,7 +29,7 @@ export default function WidgetPageContent() {
   const params = useParams<{ apiKey: string }>();
 
   const getWidget = useGetWidgetByApiKeyService();
-  const getTemplate = useGetGiftCardTemplateService();
+  const getTemplate = useGetGiftCardTemplatePublicService();
   const purchaseGiftCard = usePurchaseGiftCardService();
 
   const [widget, setWidget] = useState<Widget | null>(null);
@@ -111,30 +111,56 @@ export default function WidgetPageContent() {
     );
   if (!widget) return null;
 
+  const c = widget.customization;
+  const bgColor = c.backgroundColor || "#f4ecdc";
+  const textColor = c.textColor || undefined;
+  const labelColor = c.fieldLabelColor || undefined;
+  const fieldColor = c.fieldTextColor || undefined;
+  const secondaryColor = c.secondaryColor || c.primaryColor;
+
+  const tfSx = {
+    "& .MuiInputLabel-root": labelColor ? { color: labelColor } : {},
+    "& .MuiInputBase-input": fieldColor ? { color: fieldColor } : {},
+    "& .MuiOutlinedInput-notchedOutline": labelColor
+      ? { borderColor: labelColor }
+      : {},
+  };
+
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "background.default",
+        bgcolor: bgColor,
         overflow: "hidden",
       }}
     >
       <Container
         maxWidth="sm"
-        sx={{ py: 3, height: "100vh", overflow: "hidden" }}
+        sx={{ py: { xs: 1, sm: 3 }, height: "100vh", overflow: "hidden" }}
       >
-        <Paper elevation={0} sx={{ p: 3, height: "100%", overflow: "auto" }}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 1.5, sm: 3 },
+            height: "100%",
+            overflow: "auto",
+            bgcolor: bgColor,
+          }}
+        >
+          {" "}
           {widget.customization.headerText && (
             <Typography
               variant="h5"
               textAlign="center"
               gutterBottom
-              sx={{ color: widget.customization.primaryColor }}
+              sx={{
+                color: c.primaryColor,
+                fontSize: { xs: "1.2rem", sm: "1.5rem" },
+              }}
             >
               {widget.customization.headerText}
             </Typography>
           )}
-
           {!widget.customization.headerText && (
             <Typography
               variant="h5"
@@ -143,18 +169,18 @@ export default function WidgetPageContent() {
               sx={{
                 fontFamily: specialElite.style.fontFamily,
                 fontWeight: 700,
+                fontSize: { xs: "1.2rem", sm: "1.5rem" },
+                color: textColor,
               }}
             >
-              The Hurstwood
+              {c.titleDisplay || "The Hurstwood"}
             </Typography>
           )}
-
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
-
           {activeStep === 0 && (
             <Box>
               {template?.image && (
@@ -170,20 +196,29 @@ export default function WidgetPageContent() {
                   />
                 </Box>
               )}
-              <Typography variant="h6" gutterBottom>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1rem", sm: "1.25rem" },
+                  color: textColor,
+                }}
+              >
                 Choose an amount
               </Typography>
               <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
                 {[25, 50, 75, 100, 150, 200].map((v) => (
                   <Button
                     key={v}
+                    size="small"
                     variant={amount === String(v) ? "contained" : "outlined"}
                     onClick={() => setAmount(String(v))}
                     sx={{
                       backgroundColor:
-                        amount === String(v)
-                          ? widget.customization.primaryColor
-                          : undefined,
+                        amount === String(v) ? c.primaryColor : undefined,
+                      borderColor:
+                        amount !== String(v) ? secondaryColor : undefined,
+                      color: amount !== String(v) ? secondaryColor : undefined,
                     }}
                   >
                     {CURRENCY_SYMBOL}
@@ -198,7 +233,8 @@ export default function WidgetPageContent() {
                 onChange={(e) => setAmount(e.target.value)}
                 inputProps={{ min: 1, step: 0.01 }}
                 fullWidth
-                sx={{ mb: 2 }}
+                size="small"
+                sx={{ mb: 2, ...tfSx }}
               />
               <Button
                 variant="contained"
@@ -206,26 +242,34 @@ export default function WidgetPageContent() {
                 disabled={!canProceedStep0}
                 onClick={() => setActiveStep(1)}
                 sx={{
-                  backgroundColor: widget.customization.primaryColor,
+                  backgroundColor: c.primaryColor,
                 }}
               >
                 Continue
               </Button>
             </Box>
           )}
-
           {activeStep === 1 && (
             <Box>
-              <Typography variant="h6" gutterBottom>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1rem", sm: "1.25rem" },
+                  color: textColor,
+                }}
+              >
                 Your Information
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={1.5}>
                 <Grid size={12}>
                   <TextField
                     label="Your Name *"
                     value={purchaserName}
                     onChange={(e) => setPurchaserName(e.target.value)}
                     fullWidth
+                    size="small"
+                    sx={tfSx}
                   />
                 </Grid>
                 <Grid size={12}>
@@ -235,11 +279,16 @@ export default function WidgetPageContent() {
                     value={purchaserEmail}
                     onChange={(e) => setPurchaserEmail(e.target.value)}
                     fullWidth
+                    size="small"
+                    sx={tfSx}
                   />
                 </Grid>
                 <Grid size={12}>
                   <Divider sx={{ my: 1 }} />
-                  <Typography variant="subtitle2" color="text.secondary">
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ color: textColor, opacity: 0.7 }}
+                  >
                     Sending to someone else? (optional)
                   </Typography>
                 </Grid>
@@ -249,6 +298,8 @@ export default function WidgetPageContent() {
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
                     fullWidth
+                    size="small"
+                    sx={tfSx}
                   />
                 </Grid>
                 <Grid size={12}>
@@ -258,6 +309,8 @@ export default function WidgetPageContent() {
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
                     fullWidth
+                    size="small"
+                    sx={tfSx}
                   />
                 </Grid>
                 <Grid size={12}>
@@ -268,11 +321,17 @@ export default function WidgetPageContent() {
                     fullWidth
                     multiline
                     rows={2}
+                    size="small"
+                    sx={tfSx}
                   />
                 </Grid>
               </Grid>
               <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-                <Button variant="outlined" onClick={() => setActiveStep(0)}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setActiveStep(0)}
+                  sx={{ borderColor: secondaryColor, color: secondaryColor }}
+                >
                   Back
                 </Button>
                 <Button
@@ -281,7 +340,7 @@ export default function WidgetPageContent() {
                   disabled={!canProceedStep1}
                   onClick={() => setActiveStep(2)}
                   sx={{
-                    backgroundColor: widget.customization.primaryColor,
+                    backgroundColor: c.primaryColor,
                   }}
                 >
                   Continue
@@ -289,28 +348,34 @@ export default function WidgetPageContent() {
               </Box>
             </Box>
           )}
-
           {activeStep === 2 && (
             <Box>
-              <Typography variant="h6" gutterBottom>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1rem", sm: "1.25rem" },
+                  color: textColor,
+                }}
+              >
                 Review Your Order
               </Typography>
-              <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-                <Typography>
+              <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 }, mb: 2 }}>
+                <Typography variant="body2" sx={{ color: textColor }}>
                   <strong>Amount:</strong> {CURRENCY_SYMBOL}
                   {parseFloat(amount).toFixed(2)}
                 </Typography>
-                <Typography>
+                <Typography variant="body2" sx={{ color: textColor }}>
                   <strong>From:</strong> {purchaserName} ({purchaserEmail})
                 </Typography>
                 {recipientName && (
-                  <Typography>
+                  <Typography variant="body2" sx={{ color: textColor }}>
                     <strong>To:</strong> {recipientName}{" "}
                     {recipientEmail && `(${recipientEmail})`}
                   </Typography>
                 )}
                 {notes && (
-                  <Typography>
+                  <Typography variant="body2" sx={{ color: textColor }}>
                     <strong>Message:</strong> {notes}
                   </Typography>
                 )}
@@ -320,7 +385,11 @@ export default function WidgetPageContent() {
                 charge will be made.
               </Alert>
               <Box sx={{ display: "flex", gap: 2 }}>
-                <Button variant="outlined" onClick={() => setActiveStep(1)}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setActiveStep(1)}
+                  sx={{ borderColor: secondaryColor, color: secondaryColor }}
+                >
                   Back
                 </Button>
                 <Button
@@ -329,17 +398,16 @@ export default function WidgetPageContent() {
                   onClick={handlePurchase}
                   disabled={purchasing}
                   sx={{
-                    backgroundColor: widget.customization.primaryColor,
+                    backgroundColor: c.primaryColor,
                   }}
                 >
                   {purchasing
                     ? "Processing..."
-                    : widget.customization.buttonText || "Buy Gift Card"}
+                    : c.buttonText || "Buy Gift Card"}
                 </Button>
               </Box>
             </Box>
           )}
-
           {activeStep === 3 && purchasedCard && (
             <Box sx={{ textAlign: "center" }}>
               <Alert severity="success" sx={{ mb: 2 }}>
@@ -348,7 +416,7 @@ export default function WidgetPageContent() {
               </Alert>
               <Paper
                 variant="outlined"
-                sx={{ p: 3, mb: 2, display: "inline-block" }}
+                sx={{ p: { xs: 2, sm: 3 }, mb: 2, display: "inline-block" }}
               >
                 <Typography variant="body2" color="text.secondary">
                   Gift Card Code
@@ -358,13 +426,17 @@ export default function WidgetPageContent() {
                   sx={{
                     fontFamily: "monospace",
                     fontWeight: 700,
-                    color: widget.customization.primaryColor,
+                    color: c.primaryColor,
                     letterSpacing: 2,
+                    fontSize: { xs: "1.5rem", sm: "2.125rem" },
                   }}
                 >
                   {purchasedCard.code}
                 </Typography>
-                <Typography variant="h5" sx={{ mt: 1 }}>
+                <Typography
+                  variant="h5"
+                  sx={{ mt: 1, fontSize: { xs: "1.2rem", sm: "1.5rem" } }}
+                >
                   {CURRENCY_SYMBOL}
                   {purchasedCard.originalAmount.toFixed(2)}
                 </Typography>
@@ -386,7 +458,7 @@ export default function WidgetPageContent() {
                     );
                   }}
                   sx={{
-                    backgroundColor: widget.customization.primaryColor,
+                    backgroundColor: c.primaryColor,
                     flex: { xs: 1, sm: "auto" },
                   }}
                 >
@@ -404,23 +476,25 @@ export default function WidgetPageContent() {
                     setNotes("");
                     setAmount("25");
                   }}
-                  sx={{ flex: { xs: 1, sm: "auto" } }}
+                  sx={{
+                    flex: { xs: 1, sm: "auto" },
+                    borderColor: secondaryColor,
+                    color: secondaryColor,
+                  }}
                 >
                   Buy Another
                 </Button>
               </Box>
             </Box>
           )}
-
-          {widget.customization.footerText && (
+          {c.footerText && (
             <Typography
               variant="caption"
-              color="text.secondary"
               textAlign="center"
               display="block"
-              sx={{ mt: 2 }}
+              sx={{ mt: 2, color: textColor, opacity: 0.7 }}
             >
-              {widget.customization.footerText}
+              {c.footerText}
             </Typography>
           )}
         </Paper>

@@ -11,7 +11,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetGiftCardByCodeService } from "@/services/api/services/gift-cards";
-import { useGetGiftCardTemplateService } from "@/services/api/services/gift-card-templates";
+import { useGetGiftCardTemplatePublicService } from "@/services/api/services/gift-card-templates";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
 import { GiftCard } from "@/services/api/types/gift-card";
 import { GiftCardTemplate } from "@/services/api/types/gift-card-template";
@@ -27,16 +27,10 @@ export default function GiftCardView() {
   const [error, setError] = useState<string | null>(null);
 
   const lookupByCode = useGetGiftCardByCodeService();
-  const getTemplate = useGetGiftCardTemplateService();
+  const getTemplate = useGetGiftCardTemplatePublicService();
   const imgRef = useRef<HTMLImageElement>(null);
-  const [scale, setScale] = useState(1);
 
-  const updateScale = useCallback(() => {
-    const img = imgRef.current;
-    if (img && img.naturalWidth > 0) {
-      setScale(img.clientWidth / img.naturalWidth);
-    }
-  }, []);
+  const updateScale = useCallback(() => {}, []);
 
   useEffect(() => {
     async function load() {
@@ -116,7 +110,7 @@ export default function GiftCardView() {
           >
             {/* Template image with code overlay */}
             {template?.image && (
-              <Box sx={{ position: "relative" }}>
+              <Box sx={{ position: "relative", containerType: "inline-size" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imgRef}
@@ -147,8 +141,7 @@ export default function GiftCardView() {
                   >
                     <Typography
                       sx={{
-                        fontSize:
-                          (template.codePosition.fontSize || 16) * scale,
+                        fontSize: `${((template.codePosition.fontSize || 16) / 800) * 100}cqw`,
                         color: template.codePosition.fontColor || "#000",
                         fontWeight: "bold",
                         whiteSpace: "nowrap",
@@ -160,8 +153,7 @@ export default function GiftCardView() {
                     </Typography>
                     <Typography
                       sx={{
-                        fontSize:
-                          (template.codePosition.fontSize || 16) * scale * 0.6,
+                        fontSize: `${(((template.codePosition.fontSize || 16) * 0.6) / 800) * 100}cqw`,
                         color: template.codePosition.fontColor || "#000",
                         whiteSpace: "nowrap",
                         lineHeight: 1,
@@ -276,6 +268,7 @@ export default function GiftCardView() {
             position: absolute;
             left: 0;
             top: 0;
+            width: 100vw;
           }
         }
       `}</style>

@@ -176,6 +176,13 @@ function WidgetsList() {
                 <Button
                   size="small"
                   component={Link}
+                  href={`/admin-panel/gift-cards/widgets/${widget.id}/edit`}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="small"
+                  component={Link}
                   href={`/admin-panel/gift-cards/widgets/${widget.id}/demo`}
                 >
                   Demo & Test

@@ -11,7 +11,12 @@ function useFetch() {
 
   return useCallback(
     async (input: FetchInputType, init?: FetchInitType) => {
-      const tokens = getTokensInfo();
+      let tokens;
+      try {
+        tokens = getTokensInfo();
+      } catch {
+        tokens = null;
+      }
 
       let headers: HeadersInit = {
         "x-custom-lang": language,
@@ -32,25 +37,29 @@ function useFetch() {
       }
 
       if (tokens?.tokenExpires && tokens.tokenExpires - 60000 <= Date.now()) {
-        const newTokens = await fetch(AUTH_REFRESH_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${tokens.refreshToken}`,
-          },
-        }).then((res) => res.json());
+        try {
+          const newTokens = await fetch(AUTH_REFRESH_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${tokens.refreshToken}`,
+            },
+          }).then((res) => res.json());
 
-        if (newTokens.token) {
-          setTokensInfo({
-            token: newTokens.token,
-            refreshToken: newTokens.refreshToken,
-            tokenExpires: newTokens.tokenExpires,
-          });
+          if (newTokens.token) {
+            setTokensInfo({
+              token: newTokens.token,
+              refreshToken: newTokens.refreshToken,
+              tokenExpires: newTokens.tokenExpires,
+            });
 
-          headers = {
-            ...headers,
-            Authorization: `Bearer ${newTokens.token}`,
-          };
+            headers = {
+              ...headers,
+              Authorization: `Bearer ${newTokens.token}`,
+            };
+          }
+        } catch {
+          // Token refresh failed (e.g. third-party cookie blocked), continue without auth
         }
       }
 

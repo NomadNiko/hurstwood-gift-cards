@@ -11,13 +11,17 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { useForm, Controller, useWatch } from "react-hook-form";
-import { useCallback } from "react";
-import { useCreateWidgetService } from "@/services/api/services/widgets";
+import { useCallback, useEffect } from "react";
+import {
+  useUpdateWidgetService,
+  useGetWidgetService,
+} from "@/services/api/services/widgets";
 import { useGetActiveGiftCardTemplatesService } from "@/services/api/services/gift-card-templates";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import MenuItem from "@mui/material/MenuItem";
+import LinearProgress from "@mui/material/LinearProgress";
 import WidgetPreview from "@/components/widget-preview";
 
 type FormData = {
@@ -37,10 +41,22 @@ type FormData = {
   isActive: boolean;
 };
 
-function CreateWidget() {
+function EditWidget() {
   const router = useRouter();
-  const createWidget = useCreateWidgetService();
+  const params = useParams();
+  const id = params.id as string;
+  const updateWidget = useUpdateWidgetService();
+  const getWidget = useGetWidgetService();
   const getActiveTemplates = useGetActiveGiftCardTemplatesService();
+
+  const { data: widget, isLoading } = useQuery({
+    queryKey: ["widget", id],
+    queryFn: async () => {
+      const { status, data } = await getWidget(id);
+      if (status === HTTP_CODES_ENUM.OK) return data;
+      return null;
+    },
+  });
 
   const { data: templatesData } = useQuery({
     queryKey: ["activeTemplates"],
@@ -51,7 +67,7 @@ function CreateWidget() {
     },
   });
 
-  const { handleSubmit, control } = useForm<FormData>({
+  const { handleSubmit, control, reset } = useForm<FormData>({
     defaultValues: {
       name: "",
       templateId: "",
@@ -70,9 +86,30 @@ function CreateWidget() {
     },
   });
 
+  useEffect(() => {
+    if (widget) {
+      reset({
+        name: widget.name,
+        templateId: widget.templateId,
+        allowedDomains: widget.allowedDomains.join("\n"),
+        primaryColor: widget.customization?.primaryColor || "#00838f",
+        secondaryColor: widget.customization?.secondaryColor || "#00838f",
+        backgroundColor: widget.customization?.backgroundColor || "#f4ecdc",
+        textColor: widget.customization?.textColor || "#000000",
+        fieldLabelColor: widget.customization?.fieldLabelColor || "#666666",
+        fieldTextColor: widget.customization?.fieldTextColor || "#000000",
+        buttonText: widget.customization?.buttonText || "Buy Gift Card",
+        titleDisplay: widget.customization?.titleDisplay || "",
+        headerText: widget.customization?.headerText || "",
+        footerText: widget.customization?.footerText || "",
+        isActive: widget.isActive,
+      });
+    }
+  }, [widget, reset]);
+
   const onSubmit = useCallback(
     async (formData: FormData) => {
-      const { status } = await createWidget({
+      const { status } = await updateWidget(id, {
         name: formData.name,
         templateId: formData.templateId,
         allowedDomains: formData.allowedDomains
@@ -92,11 +129,11 @@ function CreateWidget() {
         },
         isActive: formData.isActive,
       });
-      if (status === HTTP_CODES_ENUM.CREATED) {
+      if (status === HTTP_CODES_ENUM.OK) {
         router.push("/admin-panel/gift-cards/widgets");
       }
     },
-    [createWidget, router]
+    [updateWidget, router, id]
   );
 
   const watched = useWatch({ control });
@@ -104,12 +141,22 @@ function CreateWidget() {
     (t) => t.id === watched.templateId
   );
 
+  if (isLoading) {
+    return (
+      <Container maxWidth="md">
+        <Box pt={3}>
+          <LinearProgress />
+        </Box>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="lg">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3} pt={3}>
           <Grid size={12}>
-            <Typography variant="h4">Create Widget</Typography>
+            <Typography variant="h4">Edit Widget</Typography>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
@@ -419,7 +466,7 @@ function CreateWidget() {
 
           <Grid size={12}>
             <Button type="submit" variant="contained" sx={{ mr: 2 }}>
-              Create Widget
+              Save Changes
             </Button>
             <Button
               variant="outlined"
@@ -434,4 +481,4 @@ function CreateWidget() {
   );
 }
 
-export default withPageRequiredAuth(CreateWidget, { roles: [RoleEnum.ADMIN] });
+export default withPageRequiredAuth(EditWidget, { roles: [RoleEnum.ADMIN] });

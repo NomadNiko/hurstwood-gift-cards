@@ -1,10 +1,15 @@
 export interface WidgetCustomization {
   primaryColor: string;
   secondaryColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  fieldLabelColor?: string;
+  fieldTextColor?: string;
   buttonText: string;
   logoUrl?: string;
   headerText?: string;
   footerText?: string;
+  titleDisplay?: string;
 }
 
 export interface Widget {

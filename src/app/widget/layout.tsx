@@ -5,10 +5,9 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import CssBaseline from "@mui/material/CssBaseline";
 import type { Metadata } from "next";
-import ThemeProvider from "@/components/theme/theme-provider";
+import ThemeProvider from "@/components/theme/widget-theme-provider";
 import QueryClientProvider from "@/services/react-query/query-client-provider";
 import queryClient from "@/services/react-query/query-client";
-import InitColorSchemeScript from "@/components/theme/init-color-scheme-script";
 import { CurrencyProvider } from "@/services/currency/currency-provider";
 
 export const metadata: Metadata = {
@@ -23,7 +22,6 @@ export default function WidgetLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <InitColorSchemeScript />
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <CssBaseline />

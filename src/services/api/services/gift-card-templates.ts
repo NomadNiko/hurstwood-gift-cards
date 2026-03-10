@@ -67,6 +67,19 @@ export function useGetActiveGiftCardTemplatesService() {
   );
 }
 
+// --- Get One (Public) ---
+export function useGetGiftCardTemplatePublicService() {
+  const fetch = useFetch();
+  return useCallback(
+    (id: string, requestConfig?: RequestConfigType) =>
+      fetch(`${API_URL}/v1/gift-card-templates/public/${id}`, {
+        method: "GET",
+        ...requestConfig,
+      }).then(wrapperFetchJsonResponse<GiftCardTemplate>),
+    [fetch]
+  );
+}
+
 // --- Get One ---
 export function useGetGiftCardTemplateService() {
   const fetch = useFetch();
