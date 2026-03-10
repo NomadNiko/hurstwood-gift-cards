@@ -10,9 +10,6 @@ import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
 import Divider from "@mui/material/Divider";
 import LinearProgress from "@mui/material/LinearProgress";
 import Link from "@/components/link";
@@ -26,8 +23,9 @@ import { Widget } from "@/services/api/types/widget";
 import { GiftCardTemplate } from "@/services/api/types/gift-card-template";
 import { GiftCard } from "@/services/api/types/gift-card";
 import { useCurrency } from "@/services/currency/currency-provider";
+import { Special_Elite } from "next/font/google";
 
-const steps = ["Select Amount", "Your Details", "Review & Purchase", "Done!"];
+const specialElite = Special_Elite({ weight: "400", subsets: ["latin"] });
 
 function WidgetDemo() {
   const { symbol: CURRENCY_SYMBOL } = useCurrency();
@@ -128,14 +126,8 @@ function WidgetDemo() {
     );
   if (!widget) return null;
 
-  const embedCode = `<div id="gift-card-widget"></div>
-<script src="${typeof window !== "undefined" ? window.location.origin : ""}/widget.js"></script>
-<script>
-  GiftCardWidget.init({
-    apiKey: '${widget.apiKey}',
-    containerId: 'gift-card-widget'
-  });
-</script>`;
+  const embedCode = `<div id="gift-card-widget-${widget.apiKey}"></div>
+<script src="https://gift-cards-server.nomadsoft.us/api/v1/widgets/loader/${widget.apiKey}/widget.js"></script>`;
 
   return (
     <Container maxWidth="lg">
@@ -165,13 +157,19 @@ function WidgetDemo() {
               </Typography>
             )}
 
-            <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+            {!widget.customization.headerText && (
+              <Typography
+                variant="h5"
+                textAlign="center"
+                gutterBottom
+                sx={{
+                  fontFamily: specialElite.style.fontFamily,
+                  fontWeight: 700,
+                }}
+              >
+                The Hurstwood
+              </Typography>
+            )}
 
             {error && (
               <Alert severity="error" sx={{ mb: 2 }}>
@@ -270,7 +268,7 @@ function WidgetDemo() {
                       Sending to someone else? (optional)
                     </Typography>
                   </Grid>
-                  <Grid size={6}>
+                  <Grid size={12}>
                     <TextField
                       label="Recipient Name"
                       value={recipientName}
@@ -278,7 +276,7 @@ function WidgetDemo() {
                       fullWidth
                     />
                   </Grid>
-                  <Grid size={6}>
+                  <Grid size={12}>
                     <TextField
                       label="Recipient Email"
                       type="email"
@@ -398,17 +396,24 @@ function WidgetDemo() {
                     {purchasedCard.originalAmount.toFixed(2)}
                   </Typography>
                 </Paper>
-                <Box sx={{ mt: 2 }}>
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: 1,
+                  }}
+                >
                   <Button
                     variant="contained"
                     component={Link}
                     href={`/gift-cards/view/${purchasedCard.code}`}
                     sx={{
-                      mr: 1,
                       backgroundColor: widget.customization.primaryColor,
+                      flex: { xs: 1, sm: "auto" },
                     }}
                   >
-                    View & Print Gift Card
+                    View & Print
                   </Button>
                   <Button
                     variant="outlined"
@@ -422,6 +427,7 @@ function WidgetDemo() {
                       setNotes("");
                       setAmount("25");
                     }}
+                    sx={{ flex: { xs: 1, sm: "auto" } }}
                   >
                     Buy Another
                   </Button>
@@ -482,7 +488,7 @@ function WidgetDemo() {
             <TextField
               fullWidth
               multiline
-              rows={9}
+              rows={3}
               value={embedCode}
               slotProps={{ input: { readOnly: true } }}
               sx={{

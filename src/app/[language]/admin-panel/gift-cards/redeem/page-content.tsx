@@ -137,13 +137,18 @@ function RedeemPage() {
                 placeholder="GC-XXXX-XXXX"
                 fullWidth
                 onKeyDown={(e) => e.key === "Enter" && handleLookup()}
-                sx={{ "& input": { fontFamily: "monospace", fontSize: 18 } }}
+                sx={{
+                  "& input": {
+                    fontFamily: "monospace",
+                    fontSize: { xs: 14, sm: 18 },
+                  },
+                }}
               />
               <Button
                 variant="contained"
                 onClick={handleLookup}
                 disabled={loading}
-                sx={{ minWidth: 120 }}
+                sx={{ minWidth: { xs: 80, sm: 120 }, flexShrink: 0 }}
               >
                 Lookup
               </Button>
@@ -291,31 +296,57 @@ function RedeemPage() {
                 <Typography variant="h6" gutterBottom>
                   Redemption History
                 </Typography>
-                <Paper>
+                <Paper sx={{ overflowX: "auto" }}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Amount</TableCell>
-                        <TableCell>Remaining</TableCell>
-                        <TableCell>Notes</TableCell>
+                        <TableCell
+                          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                        >
+                          Date
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                        >
+                          Amount
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                        >
+                          Remaining
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                        >
+                          Notes
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {giftCard.redemptions.map((r) => (
                         <TableRow key={r.id}>
-                          <TableCell>
+                          <TableCell
+                            sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                          >
                             {new Date(r.redeemedAt).toLocaleString()}
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                          >
                             {CURRENCY_SYMBOL}
                             {r.amount.toFixed(2)}
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                          >
                             {CURRENCY_SYMBOL}
                             {r.remainingBalance.toFixed(2)}
                           </TableCell>
-                          <TableCell>{r.notes || "-"}</TableCell>
+                          <TableCell
+                            sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+                          >
+                            {r.notes || "-"}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

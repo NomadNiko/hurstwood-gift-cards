@@ -37,14 +37,8 @@ function EmbedCodeDialog({
   onClose: () => void;
 }) {
   if (!widget) return null;
-  const embedCode = `<div id="gift-card-widget-${widget.id}"></div>
-<script src="${typeof window !== "undefined" ? window.location.origin : ""}/widget.js"></script>
-<script>
-  GiftCardWidget.init({
-    apiKey: '${widget.apiKey}',
-    containerId: 'gift-card-widget-${widget.id}'
-  });
-</script>`;
+  const embedCode = `<div id="gift-card-widget-${widget.apiKey}"></div>
+<script src="https://gift-cards-server.nomadsoft.us/api/v1/widgets/loader/${widget.apiKey}/widget.js"></script>`;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -56,7 +50,7 @@ function EmbedCodeDialog({
         <TextField
           fullWidth
           multiline
-          rows={8}
+          rows={3}
           value={embedCode}
           slotProps={{ input: { readOnly: true } }}
           sx={{

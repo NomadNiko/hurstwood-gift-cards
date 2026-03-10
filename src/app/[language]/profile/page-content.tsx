@@ -13,6 +13,10 @@ import { useTranslation } from "@/services/i18n/client";
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(20),
   height: theme.spacing(20),
+  [theme.breakpoints.down("sm")]: {
+    width: theme.spacing(12),
+    height: theme.spacing(12),
+  },
 }));
 
 function Profile() {
@@ -29,10 +33,20 @@ function Profile() {
           />
         </Grid>
         <Grid size="grow">
-          <Typography variant="h3" gutterBottom data-testid="user-name">
+          <Typography
+            variant="h3"
+            gutterBottom
+            data-testid="user-name"
+            sx={{ fontSize: { xs: "1.5rem", sm: "3rem" } }}
+          >
             {user?.firstName} {user?.lastName}
           </Typography>
-          <Typography variant="h5" gutterBottom data-testid="user-email">
+          <Typography
+            variant="h5"
+            gutterBottom
+            data-testid="user-email"
+            sx={{ fontSize: { xs: "1rem", sm: "1.5rem" } }}
+          >
             {user?.email}
           </Typography>
           <Grid container>

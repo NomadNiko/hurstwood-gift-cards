@@ -15,6 +15,7 @@ export function middleware(req: NextRequest) {
   if (
     req.nextUrl.pathname.startsWith("/_next") ||
     req.nextUrl.pathname.includes("/api/") ||
+    req.nextUrl.pathname.startsWith("/widget/") ||
     PUBLIC_FILE.test(req.nextUrl.pathname)
   ) {
     return NextResponse.next();

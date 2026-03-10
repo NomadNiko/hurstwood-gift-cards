@@ -23,6 +23,9 @@ import ThemeSwitchButton from "@/components/switch-theme-button";
 import { IS_SIGN_UP_ENABLED } from "@/services/auth/config";
 import ListSubheader from "@mui/material/ListSubheader";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Special_Elite } from "next/font/google";
+
+const specialElite = Special_Elite({ weight: "400", subsets: ["latin"] });
 
 function NavDropdown({
   label,
@@ -101,9 +104,9 @@ function ResponsiveAppBar() {
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
+              fontFamily: specialElite.style.fontFamily,
               fontWeight: 700,
-              letterSpacing: ".3rem",
+              letterSpacing: "normal",
               color: "inherit",
               textDecoration: "none",
             }}
@@ -234,9 +237,10 @@ function ResponsiveAppBar() {
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
+              fontFamily: specialElite.style.fontFamily,
               fontWeight: 700,
-              letterSpacing: ".3rem",
+              fontSize: { xs: "1.1rem", sm: "1.5rem" },
+              letterSpacing: "normal",
               color: "inherit",
               textDecoration: "none",
             }}
