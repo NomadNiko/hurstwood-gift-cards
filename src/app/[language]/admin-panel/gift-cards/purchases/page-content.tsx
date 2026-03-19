@@ -356,5 +356,5 @@ function PurchasesList() {
 }
 
 export default withPageRequiredAuth(PurchasesList, {
-  roles: [RoleEnum.ADMIN],
+  roles: [RoleEnum.ADMIN, RoleEnum.STAFF],
 });

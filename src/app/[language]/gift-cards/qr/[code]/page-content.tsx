@@ -15,10 +15,11 @@ export default function QrRedirect() {
   useEffect(() => {
     if (!isLoaded) return;
     const code = params.code;
-    const isAdmin =
-      !!user?.role && [RoleEnum.ADMIN].includes(Number(user.role.id));
+    const canRedeem =
+      !!user?.role &&
+      [RoleEnum.ADMIN, RoleEnum.STAFF].includes(Number(user.role.id));
 
-    if (isAdmin) {
+    if (canRedeem) {
       router.replace(`/admin-panel/gift-cards/redeem?code=${code}`);
     } else {
       router.replace(`/gift-cards/balance?code=${code}`);

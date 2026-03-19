@@ -449,4 +449,6 @@ function RedeemPage() {
   );
 }
 
-export default withPageRequiredAuth(RedeemPage, { roles: [RoleEnum.ADMIN] });
+export default withPageRequiredAuth(RedeemPage, {
+  roles: [RoleEnum.ADMIN, RoleEnum.STAFF],
+});

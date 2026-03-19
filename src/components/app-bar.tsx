@@ -91,6 +91,9 @@ function ResponsiveAppBar() {
 
   const isAdmin =
     !!user?.role && [RoleEnum.ADMIN].includes(Number(user?.role?.id));
+  const isStaff =
+    !!user?.role && [RoleEnum.STAFF].includes(Number(user?.role?.id));
+  const isAdminOrStaff = isAdmin || isStaff;
 
   return (
     <AppBar position="static">
@@ -145,7 +148,7 @@ function ResponsiveAppBar() {
               >
                 Check Balance
               </MenuItem>
-              {isAdmin && (
+              {isAdminOrStaff && (
                 <MenuItem
                   onClick={handleCloseNavMenu}
                   component={Link}
@@ -155,17 +158,9 @@ function ResponsiveAppBar() {
                 </MenuItem>
               )}
 
-              {isAdmin && [
+              {isAdminOrStaff && [
                 <Divider key="d1" />,
                 <ListSubheader key="h2">Manage</ListSubheader>,
-                <MenuItem
-                  key="templates"
-                  onClick={handleCloseNavMenu}
-                  component={Link}
-                  href="/admin-panel/gift-cards/templates"
-                >
-                  Templates
-                </MenuItem>,
                 <MenuItem
                   key="generate"
                   onClick={handleCloseNavMenu}
@@ -181,6 +176,31 @@ function ResponsiveAppBar() {
                   href="/admin-panel/gift-cards/purchases"
                 >
                   Purchases
+                </MenuItem>,
+                <MenuItem
+                  key="docs"
+                  onClick={handleCloseNavMenu}
+                  component={Link}
+                  href="/admin-panel/gift-cards/docs"
+                >
+                  Docs
+                </MenuItem>,
+              ]}
+
+              {isAdmin && [
+                ...(isStaff
+                  ? [
+                      <Divider key="d1a" />,
+                      <ListSubheader key="h2a">Manage</ListSubheader>,
+                    ]
+                  : []),
+                <MenuItem
+                  key="templates"
+                  onClick={handleCloseNavMenu}
+                  component={Link}
+                  href="/admin-panel/gift-cards/templates"
+                >
+                  Templates
                 </MenuItem>,
                 <MenuItem
                   key="widgets"
@@ -262,7 +282,7 @@ function ResponsiveAppBar() {
               label="Card Status"
               items={[
                 { href: "/gift-cards/balance", text: "Check Balance" },
-                ...(isAdmin
+                ...(isAdminOrStaff
                   ? [
                       {
                         href: "/admin-panel/gift-cards/redeem",
@@ -273,43 +293,56 @@ function ResponsiveAppBar() {
               ]}
             />
 
+            {isAdminOrStaff && (
+              <NavDropdown
+                label="Manage"
+                items={[
+                  ...(isAdmin
+                    ? [
+                        {
+                          href: "/admin-panel/gift-cards/templates",
+                          text: "Templates",
+                        },
+                      ]
+                    : []),
+                  {
+                    href: "/admin-panel/gift-cards/generate",
+                    text: "Generate",
+                  },
+                  {
+                    href: "/admin-panel/gift-cards/purchases",
+                    text: "Purchases",
+                  },
+                  ...(isAdmin
+                    ? [
+                        {
+                          href: "/admin-panel/gift-cards/widgets",
+                          text: "Widgets",
+                        },
+                      ]
+                    : []),
+                  {
+                    href: "/admin-panel/gift-cards/docs",
+                    text: "Docs",
+                  },
+                ]}
+              />
+            )}
+
             {isAdmin && (
-              <>
-                <NavDropdown
-                  label="Manage"
-                  items={[
-                    {
-                      href: "/admin-panel/gift-cards/templates",
-                      text: "Templates",
-                    },
-                    {
-                      href: "/admin-panel/gift-cards/generate",
-                      text: "Generate",
-                    },
-                    {
-                      href: "/admin-panel/gift-cards/purchases",
-                      text: "Purchases",
-                    },
-                    {
-                      href: "/admin-panel/gift-cards/widgets",
-                      text: "Widgets",
-                    },
-                  ]}
-                />
-                <NavDropdown
-                  label="Admin"
-                  items={[
-                    {
-                      href: "/admin-panel/gift-cards/settings",
-                      text: "Settings",
-                    },
-                    {
-                      href: "/admin-panel/users",
-                      text: String(t("common:navigation.users")),
-                    },
-                  ]}
-                />
-              </>
+              <NavDropdown
+                label="Admin"
+                items={[
+                  {
+                    href: "/admin-panel/gift-cards/settings",
+                    text: "Settings",
+                  },
+                  {
+                    href: "/admin-panel/users",
+                    text: String(t("common:navigation.users")),
+                  },
+                ]}
+              />
             )}
           </Box>
 

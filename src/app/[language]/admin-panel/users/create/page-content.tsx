@@ -216,6 +216,9 @@ function FormCreateUser() {
                     id: RoleEnum.ADMIN,
                   },
                   {
+                    id: RoleEnum.STAFF,
+                  },
+                  {
                     id: RoleEnum.USER,
                   },
                 ]}

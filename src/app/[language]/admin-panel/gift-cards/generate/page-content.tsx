@@ -198,5 +198,5 @@ function GenerateGiftCard() {
 }
 
 export default withPageRequiredAuth(GenerateGiftCard, {
-  roles: [RoleEnum.ADMIN],
+  roles: [RoleEnum.ADMIN, RoleEnum.STAFF],
 });
